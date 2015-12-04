@@ -19,16 +19,21 @@ class TimeStatsCollector extends StatsCollector
      */
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
+        $route = $request->get('_route');
+
+        if($route === null)
+        {
+            return false;
+        }
+
         $startTime = $request->server->get('REQUEST_TIME_FLOAT', $request->server->get('REQUEST_TIME'));
 
         $time = microtime(true) - $startTime;
         $time = round($time * 1000);
 
-        $statData = $this->getStatsdDataFactory()->timing($this->getStatsDataKey(), $time);
+        $statData = $this->getStatsdDataFactory()->timing($this->getStatsDataKey() . '.' . $route, $time);
         $this->addStatsData($statData);
 
         return true;
     }
-
-
 }

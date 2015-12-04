@@ -23,7 +23,13 @@ class ExceptionStatsCollector extends StatsCollector
             return true;
         }
 
-        $key = sprintf('%s.exception.%s', $this->getStatsDataKey(), $exception->getCode());
+        $route = $request->get('_route');
+
+        if($route === null) {
+            return true;
+        }
+
+        $key = sprintf('%s.%s.exception.%s', $route, $this->getStatsDataKey(), $exception->getCode());
         $statData = $this->getStatsdDataFactory()->increment($key);
         $this->addStatsData($statData);
 
